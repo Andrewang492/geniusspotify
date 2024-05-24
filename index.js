@@ -17,6 +17,7 @@ user-read-playback-state
 user-read-currently-playing
 `;
 // Genius variables:
+const g_client_accessToken = process.env.G_CLIENT_ACCESS_TOKEN;
 let g_accessToken = null;
 let g_refreshToken = null;
 let g_state = null;
@@ -29,7 +30,6 @@ app.get("/", (req, res) => {
   res.send(
     `<h1>Home page<h1> 
     <a href="/login"><button>login to spotify</button></a>
-    <a href="/logingenius"><button>login to genius</button></a>
     `
   );
 });
@@ -79,7 +79,9 @@ app.get("/callback", (req, res) => {
       console.error(`${err}`);
     });
 });
-
+/**
+ * @deprecated
+ */
 app.get("/logingenius", function (req, res) {
   g_state = generateRandomString(16);
 
@@ -95,6 +97,9 @@ app.get("/logingenius", function (req, res) {
   );
 });
 
+/**
+ * @deprecated
+ */
 app.get("/g_callback", (req, res) => {
   let code = req.query.code;
   if (g_state !== req.query.state) {
