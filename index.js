@@ -30,6 +30,7 @@ app.get("/", (req, res) => {
   res.send(
     `<h1>Home page<h1> 
     <a href="/login"><button>login to spotify</button></a>
+    <a href="/go"><button>get lyrics</button></a>
     `
   );
 });
@@ -138,6 +139,56 @@ app.get("/g_callback", (req, res) => {
         "couldn't change genius to json or store a genius acces token."
       );
       console.error(`${err}`);
+    });
+});
+
+app.get("/go", (req, res) => {
+  return fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+    headers: {
+      Authorization: "Bearer " + accessToken,
+    },
+  })
+    .then((fetchRes) => fetchRes.json())
+    .then((body) => {
+      if (body.context && body.item) {
+        const trackName = body.item.name;
+        const artistName = body.item.artists
+          .map((artistObject) => artistObject.name)
+          .join(" ");
+        return fetch(
+          `https://api.genius.com/search?` +
+            querystring.stringify({ q: `${trackName} ${artistName}` }),
+          {
+            headers: {
+              Authorization: "Bearer " + g_client_accessToken,
+            },
+          }
+        );
+      }
+    })
+    .then((geniusFetchRes) => geniusFetchRes.json())
+    .then((object) => {
+      console.log(`got genius response`);
+      console.log(object);
+      object.response.hits.forEach((element) => {
+        console.log(element.result.full_title);
+      });
+      const apiPath = object.response.hits[0].result.api_path;
+
+      return fetch(`https://api.genius.com${apiPath}?text_format=plain`, {
+        headers: {
+          Authorization: "Bearer " + g_client_accessToken,
+        },
+      });
+    })
+    .then((geniusFetchRes) => geniusFetchRes.json())
+    .then((object) => {
+      console.log("lyrics object");
+      console.log(object);
+
+      res.send(object.response.song.embed_content);
+      res.send(`<a href="/"><button>home</button></a>`);
+      // res.send(`<iframe src="${object.response.}" title="description"></iframe>`)
     });
 });
 
