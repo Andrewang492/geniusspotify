@@ -81,16 +81,13 @@ app.get("/callback", (req, res) => {
         secure: true, // Secure flag (ensure your server is running on HTTPS)
         maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expires in 7 days
       });
-      res.cookie("keyname", "soemthingelse", {
-        httpOnly: true, // HttpOnly flag
-        secure: true, // Secure flag (ensure your server is running on HTTPS)
-        maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expires in 7 days
-      });
+
       res.redirect("/");
     })
     .catch((err) => {
       console.error("error with logging in to spotify.");
       console.error(`${err}`);
+      res.send(err);
     });
 });
 /**
@@ -156,8 +153,6 @@ app.get("/g_callback", (req, res) => {
 });
 
 app.get("/go", (req, res) => {
-  console.log(req);
-  console.log(req.cookies);
   const accessToken = req.cookies.accessToken;
   if (!accessToken) {
     res.send("No access token found");
@@ -175,6 +170,7 @@ app.get("/go", (req, res) => {
         const artistName = body.item.artists
           .map((artistObject) => artistObject.name)
           .join(" ");
+        console.log(`query is: ${trackName} ${artistName}`);
         return fetch(
           `https://api.genius.com/search?` +
             querystring.stringify({ q: `${trackName} ${artistName}` }),
@@ -203,12 +199,10 @@ app.get("/go", (req, res) => {
     })
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
-      console.log("lyrics object");
-      console.log(object);
-
       res.send(object.response.song.embed_content);
       // res.send(`<iframe src="${object.response.}" title="description"></iframe>`)
-    });
+    })
+    .catch((e) => res.send(e));
 });
 
 app.listen(8080, () => {
