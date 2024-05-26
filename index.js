@@ -1,4 +1,5 @@
 const express = require("express");
+const cookieParser = require("cookie-parser");
 const generateRandomString = require("./scripts/randomString");
 const querystring = require("node:querystring");
 require("dotenv").config();
@@ -6,8 +7,8 @@ const { redirect } = require("express/lib/response.js");
 
 var app = express();
 let state = null;
-let accessToken = null;
-let refreshToken = null;
+// let accessToken = null;
+// let refreshToken = null;
 const baseurl = process.env.BASE_URL;
 const client_id = process.env.CLIENT_ID;
 const client_secret = process.env.CLIENT_SECRET;
@@ -25,6 +26,8 @@ const g_client_id = process.env.G_CLIENT_ID;
 const g_client_secret = process.env.G_CLIENT_SECRET;
 var g_redirect_uri = `${baseurl}/g_callback`;
 var g_scope = `me`;
+
+app.use(cookieParser());
 
 app.get("/", (req, res) => {
   res.send(
@@ -72,7 +75,17 @@ app.get("/callback", (req, res) => {
       return fetchRes.json();
     })
     .then((jsonRes) => {
-      accessToken = jsonRes.access_token;
+      // accessToken = jsonRes.access_token;
+      res.cookie("accessToken", jsonRes.access_token, {
+        httpOnly: true, // HttpOnly flag
+        secure: true, // Secure flag (ensure your server is running on HTTPS)
+        maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expires in 7 days
+      });
+      res.cookie("keyname", "soemthingelse", {
+        httpOnly: true, // HttpOnly flag
+        secure: true, // Secure flag (ensure your server is running on HTTPS)
+        maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expires in 7 days
+      });
       res.redirect("/");
     })
     .catch((err) => {
@@ -143,6 +156,13 @@ app.get("/g_callback", (req, res) => {
 });
 
 app.get("/go", (req, res) => {
+  console.log(req);
+  console.log(req.cookies);
+  const accessToken = req.cookies.accessToken;
+  if (!accessToken) {
+    res.send("No access token found");
+    return;
+  }
   return fetch("https://api.spotify.com/v1/me/player/currently-playing", {
     headers: {
       Authorization: "Bearer " + accessToken,
@@ -187,7 +207,6 @@ app.get("/go", (req, res) => {
       console.log(object);
 
       res.send(object.response.song.embed_content);
-      res.send(`<a href="/"><button>home</button></a>`);
       // res.send(`<iframe src="${object.response.}" title="description"></iframe>`)
     });
 });
