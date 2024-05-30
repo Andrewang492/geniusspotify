@@ -27,6 +27,11 @@ const g_client_secret = process.env.G_CLIENT_SECRET;
 var g_redirect_uri = `${baseurl}/g_callback`;
 var g_scope = `me`;
 
+function removeBracketedText(str) {
+  // This regular expression matches text inside square brackets
+  return str.replace(/\(.*?\)/g, "");
+}
+
 app.use(cookieParser());
 
 app.get("/", (req, res) => {
@@ -166,7 +171,7 @@ app.get("/go", (req, res) => {
     .then((fetchRes) => fetchRes.json())
     .then((body) => {
       if (body.context && body.item) {
-        const trackName = body.item.name;
+        const trackName = removeBracketedText(body.item.name);
         const artistName = body.item.artists
           .map((artistObject) => artistObject.name)
           .join(" ");
@@ -202,7 +207,10 @@ app.get("/go", (req, res) => {
       res.send(object.response.song.embed_content);
       // res.send(`<iframe src="${object.response.}" title="description"></iframe>`)
     })
-    .catch((e) => res.send(e));
+    .catch((e) => {
+      console.error(e);
+      res.send(e);
+    });
 });
 
 app.listen(8080, () => {
