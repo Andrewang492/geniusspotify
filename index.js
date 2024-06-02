@@ -3,7 +3,7 @@ const cookieParser = require("cookie-parser");
 const generateRandomString = require("./scripts/randomString");
 const querystring = require("node:querystring");
 require("dotenv").config();
-const { redirect } = require("express/lib/response.js");
+const { redirect, set } = require("express/lib/response.js");
 
 var app = express();
 let state = null;
@@ -28,8 +28,33 @@ var g_redirect_uri = `${baseurl}/g_callback`;
 var g_scope = `me`;
 
 function removeBracketedText(str) {
-  // This regular expression matches text inside square brackets
   return str.replace(/\(.*?\)/g, "");
+}
+
+function extractWordsInBrackets(str) {
+  // Regular expression to match text inside square, round, or curly brackets
+  let regex = /\[(.*?)\]|\((.*?)\)|\{(.*?)\}/g;
+  let matches;
+  let words = [];
+
+  // Find all matches
+  while ((matches = regex.exec(str)) !== null) {
+    // Extract words from each capturing group
+    for (let i = 1; i <= 3; i++) {
+      if (matches[i]) {
+        words = words.concat(matches[i].split(/\s+/));
+      }
+    }
+  }
+
+  return words;
+}
+
+function removeSubstring(str, substring) {
+  // Create a regular expression to match the substring
+  // The 'g' flag is used for global replacement
+  let regex = new RegExp(substring, "g");
+  return str.replace(regex, "");
 }
 
 app.use(cookieParser());
@@ -171,14 +196,24 @@ app.get("/go", (req, res) => {
     .then((fetchRes) => fetchRes.json())
     .then((body) => {
       if (body.context && body.item) {
-        const trackName = removeBracketedText(body.item.name);
-        const artistName = body.item.artists
-          .map((artistObject) => artistObject.name)
+        // only want the main artist in the query. not features.
+        const features = extractWordsInBrackets(body.item.name).map((word) =>
+          word.toLowerCase()
+        );
+        const trackName = removeBracketedText(body.item.name).toLowerCase();
+        let artistNames = body.item.artists
+          .map((artistObject) => artistObject.name.toLowerCase())
           .join(" ");
-        console.log(`query is: ${trackName} ${artistName}`);
+        features.forEach((feature) => {
+          console.log(`removing ${feature}`);
+          artistNames = removeSubstring(artistNames, feature);
+          console.log(`${artistNames}`);
+        });
+        const queryString = `${trackName} ${artistNames}`;
+        console.log(`query is: ${queryString}`);
         return fetch(
           `https://api.genius.com/search?` +
-            querystring.stringify({ q: `${trackName} ${artistName}` }),
+            querystring.stringify({ q: queryString }),
           {
             headers: {
               Authorization: "Bearer " + g_client_accessToken,
@@ -190,7 +225,7 @@ app.get("/go", (req, res) => {
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
       console.log(`got genius response`);
-      console.log(object);
+      // console.log(object);
       object.response.hits.forEach((element) => {
         console.log(element.result.full_title);
       });
