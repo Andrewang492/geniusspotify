@@ -20,13 +20,6 @@ user-read-currently-playing
 `;
 // Genius variables:
 const g_client_accessToken = process.env.G_CLIENT_ACCESS_TOKEN;
-let g_accessToken = null;
-let g_refreshToken = null;
-let g_state = null;
-const g_client_id = process.env.G_CLIENT_ID;
-const g_client_secret = process.env.G_CLIENT_SECRET;
-var g_redirect_uri = `${baseurl}/g_callback`;
-var g_scope = `me`;
 
 app.use(cookieParser());
 
@@ -35,6 +28,8 @@ app.get("/", (req, res) => {
     `<h1>Home page<h1> 
     <a href="/login"><button>login to spotify</button></a>
     <a href="/go"><button>get lyrics</button></a>
+    <iframe src="https://www.youtube.com/embed/mij0fmZ7lGw?si=g5ghgoRcoUou5e9R" width="560" height="315" title="YouTube video player"></iframe>
+    <iframe src="https://genius.com/Yungen-comfy-lyrics"></iframe>
     `
   );
 });
@@ -139,7 +134,10 @@ app.get("/go", (req, res) => {
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
       res.send(object.response.song.embed_content);
-      // res.send(`<iframe src="${object.response.}" title="description"></iframe>`)
+      // console.error(object.response.song.url);
+      // console.error(`<iframe src="${object.response.song.url}"></iframe>`);
+
+      // res.send(`<iframe src="${object.response.song.url}"></iframe>`);
     })
     .catch((e) => {
       console.error(`${Date.now()}:      logging from this block`);
