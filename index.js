@@ -91,67 +91,6 @@ app.get("/callback", (req, res) => {
       res.send(err);
     });
 });
-/**
- * @deprecated
- */
-app.get("/logingenius", function (req, res) {
-  g_state = generateRandomString(16);
-
-  res.redirect(
-    "https://api.genius.com/oauth/authorize?" +
-      querystring.stringify({
-        response_type: "code",
-        client_id: g_client_id,
-        scope: g_scope,
-        redirect_uri: g_redirect_uri,
-        state: g_state,
-      })
-  );
-});
-
-/**
- * @deprecated
- */
-app.get("/g_callback", (req, res) => {
-  let code = req.query.code;
-  if (g_state !== req.query.state) {
-    console.error("the state string is not the same.");
-    res.send("state error");
-    return;
-  }
-
-  fetch("https://api.genius.com/oauth/token", {
-    method: "POST",
-    // headers: {
-    //   "content-type": "application/x-www-form-urlencoded",
-    //   Authorization:
-    //     "Basic " +
-    //     new Buffer.from(g_client_id + ":" + g_client_secret).toString("base64"),
-    // }, //Buffer encodes the client id and secret.
-    body: querystring.stringify({
-      code: code,
-      client_secret: g_client_secret,
-      grant_type: "authorization_code",
-      client_id: g_client_id,
-      redirect_uri: g_redirect_uri,
-      response_type: "code",
-    }),
-  })
-    .then((fetchRes) => {
-      return fetchRes.json();
-    })
-    .then((jsonRes) => {
-      g_accessToken = jsonRes.access_token;
-      console.log(`genius accessToken ${accessToken}`);
-      res.redirect("/");
-    })
-    .catch((err) => {
-      console.error(
-        "couldn't change genius to json or store a genius acces token."
-      );
-      console.error(`${err}`);
-    });
-});
 
 app.get("/go", (req, res) => {
   const accessToken = req.cookies.accessToken;
@@ -199,7 +138,6 @@ app.get("/go", (req, res) => {
     })
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
-      console.error("over here");
       res.send(object.response.song.embed_content);
       // res.send(`<iframe src="${object.response.}" title="description"></iframe>`)
     })
