@@ -142,7 +142,7 @@ app.get("/go", (req, res) => {
     .catch((e) => {
       console.error(`${Date.now()}:      logging from this block`);
       console.error(e);
-      res.send(e.toString());
+      res.send(`Make sure to log in. Error: \n${e.toString()}`);
     });
 });
 
