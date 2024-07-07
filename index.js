@@ -5,6 +5,7 @@ const geniusQuery = require("./scripts/geniusQuery");
 const querystring = require("node:querystring");
 require("dotenv").config();
 const { redirect, set } = require("express/lib/response.js");
+const path = require("path");
 
 var app = express();
 let state = null;
@@ -21,17 +22,25 @@ user-read-currently-playing
 // Genius variables:
 const g_client_accessToken = process.env.G_CLIENT_ACCESS_TOKEN;
 
+app.set("view engine", "ejs");
+
 app.use(cookieParser());
 
+app.use(express.static(path.join(__dirname, "public")));
+
 app.get("/", (req, res) => {
-  res.send(
-    `<h1>Home page<h1> 
-    <a href="/login"><button>login to spotify</button></a>
-    <a href="/go"><button>get lyrics</button></a>
-    <iframe src="https://www.youtube.com/embed/mij0fmZ7lGw?si=g5ghgoRcoUou5e9R" width="560" height="315" title="YouTube video player"></iframe>
-    <iframe src="https://genius.com/Yungen-comfy-lyrics"></iframe>
-    `
-  );
+  // res.send(
+  //   `<h1>Home page<h1>
+  //   <a href="/login"><button>login to spotify</button></a>
+  //   <a href="/go"><button>get lyrics</button></a>
+  //   `
+  // );
+  const data = {
+    title: "Genius for Spotify",
+    message: "Genius for Spotify",
+    loggedIn: true,
+  };
+  res.render("home", data);
 });
 
 app.get("/login", function (req, res) {
@@ -93,6 +102,7 @@ app.get("/go", (req, res) => {
     res.send("No access token found");
     return;
   }
+  // Get currently playing
   return fetch("https://api.spotify.com/v1/me/player/currently-playing", {
     headers: {
       Authorization: "Bearer " + accessToken,
@@ -102,6 +112,7 @@ app.get("/go", (req, res) => {
     .then((body) => {
       if (body.context && body.item) {
         const queryString = geniusQuery(body);
+        // Search genius
         return fetch(
           `https://api.genius.com/search?` +
             querystring.stringify({ q: queryString }),
@@ -124,7 +135,7 @@ app.get("/go", (req, res) => {
         console.log(element.result.full_title);
       });
       const apiPath = object.response.hits[0].result.api_path;
-
+      // Get actual lyrics response
       return fetch(`https://api.genius.com${apiPath}?text_format=plain`, {
         headers: {
           Authorization: "Bearer " + g_client_accessToken,
@@ -133,17 +144,32 @@ app.get("/go", (req, res) => {
     })
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
-      res.send(object.response.song.embed_content);
+      const song = object.response.song;
+      // res.send(song.embed_content);
+      res.render("lyricsPage", {
+        songid: song.id,
+        url: song.url,
+        full_title: song.full_title,
+      });
       // console.error(object.response.song.url);
-      // console.error(`<iframe src="${object.response.song.url}"></iframe>`);
-
-      // res.send(`<iframe src="${object.response.song.url}"></iframe>`);
     })
     .catch((e) => {
-      console.error(`${Date.now()}:      logging from this block`);
+      console.error(`${Date.now()}: Error`);
+      console.error(`token: ${accessToken}`);
       console.error(e);
       res.send(`Make sure to log in. Error: \n${e.toString()}`);
     });
+});
+
+app.get("/sanity", (req, res) => {
+  res.send(
+    `<div id='rg_embed_link_4836122' class='rg_embed_link' data-song-id='4836122'>
+      Read 
+      <a href='https://genius.com/Deko-phantasy-star-online-lyrics'>“Phantasy Star Online” by Deko</a>
+      on Genius
+    </div> 
+    <script crossorigin src='//genius.com/songs/4836122/embed.js'></script>`
+  );
 });
 
 app.listen(8080, () => {

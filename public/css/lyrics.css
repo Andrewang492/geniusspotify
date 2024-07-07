@@ -1,0 +1,41 @@
+* {
+  font-family: Roboto;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #ffffff;
+  margin: auto;
+  padding: 0;
+  max-width: fit-content;
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  margin-top: 50px;
+}
+
+p {
+  text-align: center;
+  color: #666;
+}
+
+#buttons-box {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+button {
+  border: 0px;
+  background-color: rgb(0, 231, 31);
+  font-weight: 700;
+  padding: 10px;
+  height: 40px;
+  border-radius: 20px;
+}
+
+#logout-button {
+  background-color: #666;
+}
