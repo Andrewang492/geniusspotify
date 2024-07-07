@@ -97,3 +97,48 @@
   }
 }
 */
+
+// a hit that is one of those annoying pages
+/*
+{
+  highlights: [],
+  index: 'song',
+  type: 'song',
+  result: {
+    annotation_count: 0,
+    api_path: '/songs/3496375',
+    artist_names: 'Monstercat',
+    full_title: 'Uncaged Vol. 4 (Album Mix) by Monstercat',
+    header_image_thumbnail_url: 'https://images.genius.com/4345552860feab5f6f80c97990974e8a.300x300x1.png',
+    header_image_url: 'https://images.genius.com/4345552860feab5f6f80c97990974e8a.1000x1000x1.png',
+    id: 3496375,
+    lyrics_owner_id: 326686,
+    lyrics_state: 'complete',
+    path: '/Monstercat-uncaged-vol-4-album-mix-lyrics',
+    primary_artist_names: 'Monstercat',
+    pyongs_count: null,
+    relationships_index_url: 'https://genius.com/Monstercat-uncaged-vol-4-album-mix-sample',
+    release_date_components: { year: 2018, month: 2, day: 28 },
+    release_date_for_display: 'February 28, 2018',
+    release_date_with_abbreviated_month_for_display: 'Feb. 28, 2018',
+    song_art_image_thumbnail_url: 'https://images.genius.com/4345552860feab5f6f80c97990974e8a.300x300x1.png',
+    song_art_image_url: 'https://images.genius.com/4345552860feab5f6f80c97990974e8a.1000x1000x1.png',
+    stats: { unreviewed_annotations: 0, hot: false },
+    title: 'Uncaged Vol. 4 (Album Mix)',
+    title_with_featured: 'Uncaged Vol. 4 (Album Mix)',
+    url: 'https://genius.com/Monstercat-uncaged-vol-4-album-mix-lyrics',
+    featured_artists: [],
+    primary_artist: {
+      api_path: '/artists/455299',
+      header_image_url: 'https://images.genius.com/6026a94beba52a0460bdae650d69729f.1000x250x1.jpg',
+      id: 455299,
+      image_url: 'https://images.genius.com/eb401acf41a95a7987ec384a854332a8.400x400x1.png',
+      is_meme_verified: false,
+      is_verified: false,
+      name: 'Monstercat',
+      url: 'https://genius.com/artists/Monstercat'
+    },
+    primary_artists: [ [Object] ]
+  }
+}
+*/

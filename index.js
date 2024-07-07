@@ -98,6 +98,7 @@ app.get("/callback", (req, res) => {
 
 app.get("/go", (req, res) => {
   const accessToken = req.cookies.accessToken;
+  let queryString = "";
   if (!accessToken) {
     res.send("No access token found");
     return;
@@ -111,7 +112,7 @@ app.get("/go", (req, res) => {
     .then((fetchRes) => fetchRes.json())
     .then((body) => {
       if (body.context && body.item) {
-        const queryString = geniusQuery(body);
+        queryString = geniusQuery(body);
         // Search genius
         return fetch(
           `https://api.genius.com/search?` +
@@ -128,13 +129,26 @@ app.get("/go", (req, res) => {
     .then((object) => {
       console.log(`got genius response`);
       console.log(object);
-      if (object.response.hits.length == 0) {
+      console.log(queryString);
+      // only select if artist in the genius page looks right.
+      const results1 = object.response.hits.filter((e) => {
+        console.log(e.result.primary_artist?.name.toLowerCase());
+        return queryString.includes(
+          e.result.primary_artist?.name.toLowerCase()
+        );
+      });
+      if (results1.length == 0 && object.response.hits.length == 0) {
         throw new Error("No hits");
       }
-      object.response.hits.forEach((element) => {
+      results1.forEach((element) => {
         console.log(element.result.full_title);
+        console.log(element.result.primary_artist?.name);
       });
-      const apiPath = object.response.hits[0].result.api_path;
+      // try select filtered by artist. Else use the unfiltered results' first result.
+      const apiPath = results1[0]
+        ? results1[0].result.api_path
+        : object.response.hits[0].result.api_path;
+
       // Get actual lyrics response
       return fetch(`https://api.genius.com${apiPath}?text_format=plain`, {
         headers: {
@@ -145,13 +159,11 @@ app.get("/go", (req, res) => {
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
       const song = object.response.song;
-      // res.send(song.embed_content);
       res.render("lyricsPage", {
         songid: song.id,
         url: song.url,
         full_title: song.full_title,
       });
-      // console.error(object.response.song.url);
     })
     .catch((e) => {
       console.error(`${Date.now()}: Error`);
