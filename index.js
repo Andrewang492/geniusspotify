@@ -1,7 +1,11 @@
 const express = require("express");
 const cookieParser = require("cookie-parser");
 const generateRandomString = require("./scripts/randomString");
-const geniusQuery = require("./scripts/geniusQuery");
+const {
+  makeQuery,
+  getArtistsNames,
+  getGeniusAPIPath,
+} = require("./scripts/geniusQuery");
 const querystring = require("node:querystring");
 require("dotenv").config();
 const { redirect, set } = require("express/lib/response.js");
@@ -99,6 +103,7 @@ app.get("/callback", (req, res) => {
 app.get("/go", (req, res) => {
   const accessToken = req.cookies.accessToken;
   let queryString = "";
+  let artistNames = "";
   if (!accessToken) {
     res.send("No access token found");
     return;
@@ -112,7 +117,7 @@ app.get("/go", (req, res) => {
     .then((fetchRes) => fetchRes.json())
     .then((body) => {
       if (body.context && body.item) {
-        queryString = geniusQuery(body);
+        let { queryString, artistNames } = makeQuery(body);
         // Search genius
         return fetch(
           `https://api.genius.com/search?` +
@@ -127,27 +132,7 @@ app.get("/go", (req, res) => {
     })
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
-      console.log(`got genius response`);
-      console.log(object);
-      console.log(queryString);
-      // only select if artist in the genius page looks right.
-      const results1 = object.response.hits.filter((e) => {
-        console.log(e.result.primary_artist?.name.toLowerCase());
-        return queryString.includes(
-          e.result.primary_artist?.name.toLowerCase()
-        );
-      });
-      if (results1.length == 0 && object.response.hits.length == 0) {
-        throw new Error("No hits");
-      }
-      results1.forEach((element) => {
-        console.log(element.result.full_title);
-        console.log(element.result.primary_artist?.name);
-      });
-      // try select filtered by artist. Else use the unfiltered results' first result.
-      const apiPath = results1[0]
-        ? results1[0].result.api_path
-        : object.response.hits[0].result.api_path;
+      const apiPath = getGeniusAPIPath(object, queryString);
 
       // Get actual lyrics response
       return fetch(`https://api.genius.com${apiPath}?text_format=plain`, {

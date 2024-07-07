@@ -88,18 +88,51 @@ function makeQuery(spotifyResponse) {
     .filter((word) => !new Set(["(", ")", "[", "]", "{", "}"]).has(word)) //remove brakcets
     .join(" ");
 
-  let artistNames = body.item.artists
+  let artistNames = getArtistsNames(spotifyResponse, extraWords);
+
+  const queryString = `${trackName} ${artistNames}`;
+  console.log(`query is: ${queryString}`);
+  return {
+    trackName,
+    artistNames,
+    queryString,
+  };
+}
+
+function getArtistsNames(spotifyResponse, extraWords) {
+  const body = spotifyResponse;
+  return body.item.artists
     .map((artistObject) => artistObject.name.toLowerCase().split(" "))
     .reduce((prev, next) => [...prev, ...next], []) // Put names as individual artists.
     .filter((artist) => !new Set(extraWords).has(artist))
     .join(" ");
-
-  const queryString = `${trackName} ${artistNames}`;
-  console.log(`query is: ${queryString}`);
-  return queryString;
 }
 
-module.exports = makeQuery;
+function getGeniusAPIPath(object, queryString, artistNames) {
+  console.log(`got genius response`);
+  console.log(object);
+  console.log(queryString);
+
+  // only select if artist in the genius page looks right.
+  const results1 = object.response.hits.filter((e) => {
+    console.log(e.result.primary_artist?.name.toLowerCase());
+    return queryString.includes(e.result.primary_artist?.name.toLowerCase());
+  });
+  if (results1.length == 0 && object.response.hits.length == 0) {
+    throw new Error("No hits");
+  }
+  results1.forEach((element) => {
+    console.log(element.result.full_title);
+    console.log(element.result.primary_artist?.name);
+  });
+  // try select filtered by artist. Else use the unfiltered results' first result.
+  const apiPath = results1[0]
+    ? results1[0].result.api_path
+    : object.response.hits[0].result.api_path;
+  return apiPath;
+}
+
+module.exports = { makeQuery, getGeniusAPIPath };
 
 /**
  * @deprecated
