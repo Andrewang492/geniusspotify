@@ -15,6 +15,7 @@ full_title
   <body>
     <div id="panel">
       <h1><%= full_title %></h1>
+      <button id="home-button">GO HOME</button>
       <img class="panel_image" src="<%= header_image_thumbnail_url %>" />
       <img class="panel_image" src="<%= header_image_url %>" />
       <img class="panel_image" src="<%= song_art_image_thumbnail_url %>" />
@@ -36,5 +37,6 @@ full_title
       crossorigin
       src="//genius.com/songs/<%= songid %>/embed.js"
     ></script>
+    <script src="/js/lyrics.js"></script>
   </body>
 </html>
