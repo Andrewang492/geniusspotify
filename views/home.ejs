@@ -7,10 +7,14 @@
   <body>
     <h1><%= message %></h1>
     <div id="buttons-box">
+      <% if (loggedIn) { %>
       <button id="lyrics-button">SEE LYRICS</button>
-      <!-- <button id="logout-button">LOGOUT</button> -->
+      <button type="button" id="logout-button">LOGOUT</button>
+      <% } else { %>
       <button id="login-button">LOGIN</button>
+      <% } %>
     </div>
+
     <script src="/js/home.js"></script>
   </body>
 </html>

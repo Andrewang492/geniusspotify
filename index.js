@@ -39,10 +39,11 @@ app.get("/", (req, res) => {
   //   <a href="/go"><button>get lyrics</button></a>
   //   `
   // );
+  const hasToken = req.cookies.accessToken ? true : false;
   const data = {
     title: "Genius for Spotify",
-    message: "Genius for Spotify",
-    loggedIn: true,
+    message: hasToken ? "Genius for Spotify" : "Login to see lyrics!",
+    loggedIn: hasToken,
   };
   res.render("home", data);
 });
@@ -60,6 +61,12 @@ app.get("/login", function (req, res) {
         state: state,
       })
   );
+});
+
+app.get("/logout", (req, res) => {
+  console.log("LOGGIN OUT");
+  res.clearCookie("accessToken");
+  res.redirect("/");
 });
 
 app.get("/callback", (req, res) => {
@@ -119,6 +126,7 @@ app.get("/go", (req, res) => {
       if (body.context && body.item) {
         let { queryString, artistNames } = makeQuery(body);
         // Search genius
+        console.log("");
         return fetch(
           `https://api.genius.com/search?` +
             querystring.stringify({ q: queryString }),
@@ -128,6 +136,9 @@ app.get("/go", (req, res) => {
             },
           }
         );
+      } else {
+        // console.error(body);
+        throw new Error(body.message);
       }
     })
     .then((geniusFetchRes) => geniusFetchRes.json())
