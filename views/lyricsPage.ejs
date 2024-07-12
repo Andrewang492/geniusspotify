@@ -9,10 +9,19 @@ full_title
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Genius Lyrics for <%= full_title %></title>
+    <title>Genius Lyrics for "<%= full_title %>"</title>
     <link rel="stylesheet" type="text/css" href="/css/lyrics.css" />
   </head>
   <body>
+    <div id="panel">
+      <h1><%= full_title %></h1>
+      <img class="panel_image" src="<%= header_image_thumbnail_url %>" />
+      <img class="panel_image" src="<%= header_image_url %>" />
+      <img class="panel_image" src="<%= song_art_image_thumbnail_url %>" />
+      <img class="panel_image" src="<%= song_art_image_url %>" />
+      <img class="panel_image" src="<%= primary_artist_header_image_url %>" />
+      <img class="panel_image" src="<%= primary_artist_image_url %>" />
+    </div>
     <div
       id="rg_embed_link_<%= songid %>"
       class="rg_embed_link"
@@ -22,6 +31,7 @@ full_title
       <a href="<%= url %>"><%= full_title %></a>
       on Genius
     </div>
+
     <script
       crossorigin
       src="//genius.com/songs/<%= songid %>/embed.js"

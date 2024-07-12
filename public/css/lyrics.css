@@ -3,11 +3,10 @@
 }
 
 body {
-  font-family: Arial, sans-serif;
   background-color: #ffffff;
   margin: auto;
   padding: 0;
-  max-width: 70vw;
+  max-width: 50vw;
 }
 
 p {
@@ -17,4 +16,20 @@ p {
 
 .rg_embed {
   margin-left: 25vw;
+  background-image: linear-gradient(#f2ffba, #f2ffba, #929292);
+  background-repeat: repeat;
+}
+
+#panel {
+  position: fixed;
+  width: 20vw;
+  height: 90vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.panel_image {
+  max-height: 10vh;
+  max-width: 10vw;
 }

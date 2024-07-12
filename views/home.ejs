@@ -5,14 +5,16 @@
     <link rel="stylesheet" type="text/css" href="/css/style.css" />
   </head>
   <body>
-    <h1><%= message %></h1>
-    <div id="buttons-box">
-      <% if (loggedIn) { %>
-      <button id="lyrics-button">SEE LYRICS</button>
-      <button type="button" id="logout-button">LOGOUT</button>
-      <% } else { %>
-      <button id="login-button">LOGIN</button>
-      <% } %>
+    <div id="mainbody">
+      <h1><%= message %></h1>
+      <div id="buttons-box">
+        <% if (loggedIn) { %>
+        <button id="lyrics-button">SEE LYRICS</button>
+        <button type="button" id="logout-button">LOGOUT</button>
+        <% } else { %>
+        <button id="login-button">LOGIN</button>
+        <% } %>
+      </div>
     </div>
 
     <script src="/js/home.js"></script>

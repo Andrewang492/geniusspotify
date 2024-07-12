@@ -116,7 +116,7 @@ app.get("/go", (req, res) => {
     return;
   }
   // Get currently playing
-  return fetch("https://api.spotify.com/v1/me/player/currently-playing", {
+  fetch("https://api.spotify.com/v1/me/player/currently-playing", {
     headers: {
       Authorization: "Bearer " + accessToken,
     },
@@ -159,6 +159,12 @@ app.get("/go", (req, res) => {
         songid: song.id,
         url: song.url,
         full_title: song.full_title,
+        header_image_thumbnail_url: song.header_image_thumbnail_url,
+        header_image_url: song.header_image_url,
+        song_art_image_thumbnail_url: song.song_art_image_thumbnail_url,
+        song_art_image_url: song.song_art_image_url,
+        primary_artist_header_image_url: song.primary_artist?.header_image_url,
+        primary_artist_image_url: song.primary_artist?.image_url,
       });
     })
     .catch((e) => {
