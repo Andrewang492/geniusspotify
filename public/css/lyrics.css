@@ -11,17 +11,16 @@ p {
 
 .rg_embed {
   margin-left: 25vw;
-  background-image: linear-gradient(#f2ffba, #f2ffba, #929292);
+  background-image: linear-gradient(#f2ffba, #f2ffba, white);
   background-repeat: repeat;
   width: 500px;
-  height: 100vh;
+  height: fit-content;
   box-shadow: 10px 10px;
 }
 
 #panel {
   position: fixed;
   width: 20vw;
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -1,5 +1,11 @@
+@font-face {
+  font-family: "myNexa"; /*a name to be used later*/
+  src: url("/fonts/NEXA LIGHT.TTF"); /*URL to font*/
+  src: url("/fonts/NEXA BOLD.TTF"); /*URL to font*/
+}
+
 * {
-  font-family: Roboto;
+  font-family: "myNexa";
 }
 
 body {
