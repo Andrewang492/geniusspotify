@@ -171,7 +171,7 @@ app.get("/go", (req, res) => {
       console.error(`${Date.now()}: Error`);
       console.error(`token: ${accessToken}`);
       console.error(e);
-      res.send(`Make sure to log in. Error: \n${e.toString()}`);
+      res.render("error", { message: e.toString() });
     });
 });
 
