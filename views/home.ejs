@@ -9,8 +9,9 @@
       <h1><%= message %></h1>
       <div id="buttons-box">
         <% if (loggedIn) { %>
-        <button id="lyrics-button">SEE LYRICS</button>
+        <button type="button" id="lyrics-button">SEE LYRICS</button>
         <button type="button" id="logout-button">LOGOUT</button>
+        <button type="button" id="refresh-button">REFRESH</button>
         <% } else { %>
         <button id="login-button">LOGIN</button>
         <% } %>

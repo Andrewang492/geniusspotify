@@ -66,6 +66,7 @@ app.get("/login", function (req, res) {
 app.get("/logout", (req, res) => {
   console.log("LOGGIN OUT");
   res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
   res.redirect("/");
 });
 
@@ -91,10 +92,15 @@ app.get("/callback", (req, res) => {
       return fetchRes.json();
     })
     .then((jsonRes) => {
-      // accessToken = jsonRes.access_token;
+      // set your accessToken:
       res.cookie("accessToken", jsonRes.access_token, {
         httpOnly: true, // HttpOnly flag
         secure: true, // Secure flag (ensure your server is running on HTTPS)
+        maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expires in 7 days
+      });
+      res.cookie("refreshToken", jsonRes.refresh_token, {
+        httpOnly: true,
+        secure: true,
         maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expires in 7 days
       });
 
@@ -186,6 +192,79 @@ app.get("/sanity", (req, res) => {
   );
 });
 
+app.get("/refresh_token", (req, res) => {
+  // var refresh_token = req.query.refresh_token;
+  // var authOptions = {
+  //   url: 'https://accounts.spotify.com/api/token',
+  //   headers: {
+  //     'content-type': 'application/x-www-form-urlencoded',
+  //     'Authorization': 'Basic ' + (new Buffer.from(client_id + ':' + client_secret).toString('base64'))
+  //   },
+  //   form: {
+  //     grant_type: 'refresh_token',
+  //     refresh_token: refresh_token
+  //   },
+  //   json: true
+  // };
+
+  const refresh_token = req.cookies.refreshToken;
+  getRefreshToken(refresh_token)
+    .then((body) => {
+      console.log(body);
+      res.send({
+        access_token: body.access_token,
+        refresh_token: body.refresh_token,
+      });
+    })
+    .catch((e) => {
+      res.send(e.toString());
+    });
+
+  // request.post(authOptions, function(error, response, body) {
+  //   if (!error && response.statusCode === 200) {
+  //     var access_token = body.access_token,
+  //         refresh_token = body.refresh_token;
+  //     res.send({
+  //       'access_token': access_token,
+  //       'refresh_token': refresh_token
+  //     });
+  //   }
+  // });
+  // res.send("hiiii");
+});
+
 app.listen(8080, () => {
   console.log(`App listening on \n ${baseurl}`);
 });
+
+const getRefreshToken = async (refreshToken) => {
+  console.log(`refresh token ${refreshToken}`);
+  const url = "https://accounts.spotify.com/api/token";
+  const payload = {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      grant_type: "refresh_token",
+      refresh_token: refreshToken,
+      client_id,
+    }),
+  };
+  return fetch(url, payload)
+    .then((respon) => {
+      console.log(respon);
+      return respon.json();
+    })
+    .then((response) => {
+      console.log(response);
+      return {
+        access_token: response.access_token,
+        refresh_token: response.refresh_token,
+      };
+    })
+    .catch((e) => {
+      console.error(`some error in getRefreshToken`);
+      console.error(e);
+    });
+};
