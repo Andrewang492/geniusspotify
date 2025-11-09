@@ -77,7 +77,7 @@ function listToLowercase(list) {}
  * @param {JSON Object} spotifyResponse A response from spotify regarding the currently playing song
  * @returns {String} a query string for Genius
  */
-function makeQuery(spotifyResponse) {
+function makeQuery(spotifyResponse) { // TODO: only need the track name and the artsts object.
   const body = spotifyResponse;
   const extraWords = collectWordsAfterFeat(body.item.name).map((word) =>
     word.replace(/[\[\]\{\}\(\)]/g, "").toLowerCase()

@@ -149,6 +149,8 @@ app.get("/go", (req, res) => {
     })
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
+      console.log(`Query string: ${queryString}`);
+      console.log(queryString); // TODO seems like queryString is not defined here?
       const apiPath = getGeniusAPIPath(object, queryString);
 
       // Get actual lyrics response
@@ -160,8 +162,9 @@ app.get("/go", (req, res) => {
     })
     .then((geniusFetchRes) => geniusFetchRes.json())
     .then((object) => {
+      // Render lyrics page
       const song = object.response.song;
-      res.render("lyricsPage", {
+      res.render("lyricsPageDefault", {
         songid: song.id,
         url: song.url,
         full_title: song.full_title,
@@ -182,14 +185,16 @@ app.get("/go", (req, res) => {
 });
 
 app.get("/sanity", (req, res) => {
-  res.send(
-    `<div id='rg_embed_link_4836122' class='rg_embed_link' data-song-id='4836122'>
-      Read 
-      <a href='https://genius.com/Deko-phantasy-star-online-lyrics'>“Phantasy Star Online” by Deko</a>
-      on Genius
-    </div> 
-    <script crossorigin src='//genius.com/songs/4836122/embed.js'></script>`
-  );
+  // res.send(
+  //   `<div id='rg_embed_link_4836122' class='rg_embed_link' data-song-id='4836122'>
+  //     Read 
+  //     <a href='https://genius.com/Deko-phantasy-star-online-lyrics'>“Phantasy Star Online” by Deko</a>
+  //     on Genius
+  //   </div> 
+  //   <script crossorigin src='//genius.com/songs/4836122/embed.js'></script>`
+  // );
+  res.render("sanity2", {
+  });
 });
 
 app.get("/refresh_token", (req, res) => {
