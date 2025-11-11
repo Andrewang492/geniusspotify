@@ -104,7 +104,11 @@ app.get("/callback", (req, res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000, // Cookie expires in 7 days
       });
 
-      res.redirect("/");
+      res.redirect("/#"+
+                querystring.stringify({
+                  access_token: jsonRes.access_token,
+                  refresh_token: jsonRes.refresh_token
+                }));
     })
     .catch((err) => {
       console.error("error with logging in to spotify.");

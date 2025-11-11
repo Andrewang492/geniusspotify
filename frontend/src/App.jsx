@@ -68,6 +68,9 @@ function App() {
         <div style={{ display: "flex", flexDirection: "column" }}>
           <Link to={`redirect`}>redirect page</Link>
           <Link to={`user`}>show user</Link>
+          <a href='http://localhost:8080' target="_blank">
+            REAL login to spotify
+          </a>
           <button onClick={onLoginClick}>login to spotify</button>
         </div>
       </div>
