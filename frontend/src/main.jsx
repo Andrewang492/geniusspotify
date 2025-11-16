@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./error.jsx";
 import Redirect from "./routes/redirect.jsx";
 import User from "./routes/User.jsx";
+import NotFoundPage from "./routes/NotFoundPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -13,15 +14,20 @@ const router = createBrowserRouter([
     element: <App />,
     errorElement: <ErrorPage />,
     children: [
-      {
-        path: "user",
-        element: <User />,
-      },
+
     ],
   },
   {
     path: "redirect",
     element: <Redirect />,
+  },
+  {
+    path: "user",
+    element: <User />,
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
 
