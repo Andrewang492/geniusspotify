@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
 import "./App.css";
-import { Outlet, Link } from "react-router-dom";
 import queryString from "query-string";
 import SpotifyWebApi from "spotify-web-api-js";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Box from '@mui/material/Box';
+import { Outlet, Link as RLink } from "react-router-dom";
+import HomePage from "./components/pages/HomePage";
 
 const spotifyApi = new SpotifyWebApi();
 
@@ -34,13 +36,16 @@ const getTokenFromUrl = () => {
 const setCookie = (name, value, maxAgeSeconds) => {
   const secure = location.protocol === "https:" ? "; Secure" : "";
   document.cookie =
-    `${encodeURIComponent(name)}=${encodeURIComponent(value)}; Max-Age=${maxAgeSeconds}; Path=/; SameSite=Lax` +
-    secure;
+    `${encodeURIComponent(name)}=${encodeURIComponent(
+      value
+    )}; Max-Age=${maxAgeSeconds}; Path=/; SameSite=Lax` + secure;
 };
 
 const getCookie = (name) => {
   const match = document.cookie.match(
-    new RegExp("(^|; )" + name.replace(/([.*+?^${}()|[\]\\])/g, "\\$1") + "=([^;]*)")
+    new RegExp(
+      "(^|; )" + name.replace(/([.*+?^${}()|[\]\\])/g, "\\$1") + "=([^;]*)"
+    )
   );
   return match ? decodeURIComponent(match[2]) : null;
 };
@@ -74,7 +79,11 @@ function App() {
       // store access token for 1 hour and refresh token for 30 days
       setCookie("spotify_token", _token, 60 * 60); // Known to be 1 hour
       if (_refresh_token) {
-        setCookie("spotify_refresh_token", _refresh_token, 30 * 24 * 60 * 60 * 12); // 360 days
+        setCookie(
+          "spotify_refresh_token",
+          _refresh_token,
+          30 * 24 * 60 * 60 * 12
+        ); // 360 days
       }
     }
   }, []);
@@ -111,40 +120,37 @@ function App() {
           name: data.item.name,
           albumArt: data.item.album.images[0].url,
         });
-      })
+      });
   };
-  
+
   function onLoginClick() {
-    window.open(backendUrl, "_blank"); // TODO dynamic to backend url
+    // window.open(backendUrl, "_blank");
+    window.location.href = backendUrl;
   }
 
   return (
     <div id="main" style={{ display: "flex", flexDirection: "row" }}>
       <div id="left-main">
-        <div>
-          <a href="https://vitejs.dev" target="_blank">
-            <img src={viteLogo} className="logo" alt="Vite logo" />
-          </a>
-          <a href="https://react.dev" target="_blank">
-            <img src={reactLogo} className="logo react" alt="React logo" />
-          </a>
-        </div>
-        <h1>Vite + React</h1>
-        <div className="card">
-          <p>
-            Edit <code>src/App.jsx</code> and save to test HMR
-          </p>
-        </div>
-        <p className="read-the-docs">
-          Click on the Vite and React logos to learn more
-        </p>
         <div style={{ display: "flex", flexDirection: "column" }}>
-          <Link to={`redirect`}>redirect page</Link>
-          <Link to={`user`}>show user</Link>
+          <Box sx={{ width: "100%" }}>
+            <Stack spacing={2}>
+              <RLink to={`redirect`}>
+                <Button variant="contained">Redirect Page</Button>
+              </RLink>
+              <RLink to={`user`}>
+                <Button variant="contained">Show User</Button>
+              </RLink>
+            </Stack>
+          </Box>
+
           {!loggedIn && (
-            <button onClick={() => onLoginClick()} target="_blank">
+            <Button
+              variant="contained"
+              onClick={() => onLoginClick()}
+              target="_blank"
+            >
               login to spotify
-            </button>
+            </Button>
           )}
           {loggedIn && (
             <>
@@ -152,9 +158,9 @@ function App() {
               <div>
                 <img src={nowPlaying.albumArt} style={{ height: 150 }}></img>
               </div>
-              <button onClick={() => getNowPlaying()}>
+              <Button variant="contained" onClick={() => getNowPlaying()}>
                 Check Now Playing
-              </button>
+              </Button>
             </>
           )}
         </div>
