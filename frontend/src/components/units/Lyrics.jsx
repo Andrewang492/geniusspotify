@@ -1,13 +1,53 @@
-import React from 'react'
-import {TokenContext} from "../../App.jsx";
-import { useState, useEffect, useContext} from "react";
+import React from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import { useState, useEffect, useContext } from "react";
+const backendUrl = import.meta.env.VITE_BACKEND_URL;
 
-const Lyrics = () => {
-  const { spotifyToken, spotifyRToken} = useContext(TokenContext)
-  
-  return (
-    <div>Lyrics</div>
+const fetchLyrics = (query, token) => {
+  return fetch(
+    `${backendUrl}/genius/search?queryString=${encodeURIComponent(query)}`,
+    {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }
   )
-}
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      return data;
+    })
+    .then((data) => {
+      return fetch(
+        `${backendUrl}/genius/referents?songId=${encodeURIComponent(data.song.id)}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+    })
+    .then((res) => res.json())
+    .then((data) => {
+      console.log(data);
+      return data;
+    })
+    .catch((e) => "not found");
+};
 
-export default Lyrics
+const Lyrics = ({ spNowPlaying }) => {
+  const { spotifyToken, spotifyRToken } = useContext(AuthContext);
+  const [lyrics, setLyrics] = useState("");
+
+  useEffect(() => {
+    if (spNowPlaying.item) {
+      fetchLyrics(spNowPlaying.item.name, spotifyToken).then((data) => {
+        setLyrics(data.song.description.plain);
+      });
+    }
+  }, [spNowPlaying]);
+
+  return <div>{lyrics}</div>;
+};
+
+export default Lyrics;

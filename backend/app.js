@@ -179,9 +179,8 @@ app.get('/np', (req, res) => {
 // Genius Calls
 // -----------------------------
 
+// Searches, then returns song information for the search. 
 app.get('/genius/search', (req, res) => {
-  const access_token = req.query.access_token;
-
   const queryString = req.query.queryString;
   fetch(
     `https://api.genius.com/search?` +
@@ -197,7 +196,7 @@ app.get('/genius/search', (req, res) => {
 
     const songId = getGeniusBestMatchSongId(object, queryString);
 
-    // Get actual lyrics response
+    // Get actual song response
     return fetch(`https://api.genius.com/songs/${songId}?text_format=plain`, {
       headers: {
         Authorization: "Bearer " + g_client_accessToken,
@@ -209,8 +208,27 @@ app.get('/genius/search', (req, res) => {
     res.send(object.response)
   })
   .catch((e) => res.send(e.toString()))
+});
 
 
+
+// Using a song id, get referents.
+app.get('/genius/referents', (req, res) => {
+  const songId = req.query.songId;
+  fetch(
+    `https://api.genius.com/referents?` +
+      querystring.stringify({ q: songId }),
+    {
+      headers: {
+        Authorization: "Bearer " + g_client_accessToken,
+      },
+    }
+  )
+  .then((geniusFetchRes) => geniusFetchRes.json())
+  .then((object) => {
+    res.send(object.response)
+  })
+  .catch((e) => res.send(e.toString()))
 });
 
 

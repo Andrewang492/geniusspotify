@@ -1,22 +1,21 @@
 import React from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
-import Box from '@mui/material/Box';
+import Box from "@mui/material/Box";
 import { Outlet, Link as RLink } from "react-router-dom";
-import { useState, useEffect, useContext} from "react";
-import {TokenContext} from "../../App.jsx";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../contexts/AuthContext";
+import Lyrics from "../units/Lyrics";
 
 const backendUrl = import.meta.env.VITE_BACKEND_URL;
-
 
 function onLoginClick() {
   // window.open(backendUrl, "_blank");
   window.location.href = backendUrl;
 }
 
-
 const HomePage = () => {
-  const { spotifyToken, spotifyRToken} = useContext(TokenContext)
+  const { spotifyToken, spotifyRToken } = useContext(AuthContext);
   const [nowPlaying, setNowPlaying] = useState({});
   const loggedIn = spotifyToken ? true : false;
   // const spotifyToken = "dfdfd"
@@ -26,10 +25,11 @@ const HomePage = () => {
       .then((res) => res.json())
       .then((data) => {
         console.log(data);
-        setNowPlaying({
-          name: data.item.name,
-          albumArt: data.item.album.images[0].url,
-        });
+        setNowPlaying(data);
+        // setNowPlaying({
+        //   name: data.item.name,
+        //   albumArt: data.item.album.images[0].url,
+        // });
       });
   };
 
@@ -42,12 +42,10 @@ const HomePage = () => {
     // poll every 15s to keep now-playing up to date
     const intervalId = setInterval(() => {
       fetchNowPlaying(spotifyToken);
-    }, 15000);
+    }, 120000);
 
     return () => clearInterval(intervalId);
   }, [spotifyToken]);
-
-
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
@@ -71,17 +69,21 @@ const HomePage = () => {
           login to spotify
         </Button>
       )}
-      {loggedIn && (
+      {loggedIn && nowPlaying.item && (
         <>
-          <div>Now Playing: {nowPlaying.name} </div>
+          <div>Now Playing: {nowPlaying.item.name} </div>
           <div>
-            <img src={nowPlaying.albumArt} style={{ height: 150 }}></img>
+            <img
+              src={nowPlaying.item.album.images[0].url}
+              style={{ height: 150 }}
+            ></img>
           </div>
-          <Button variant="contained" onClick={() => fetchNowPlaying()}>
-            Check Now Playing
-          </Button>
         </>
       )}
+      <Button variant="contained" onClick={() => fetchNowPlaying()}>
+        Check Now Playing
+      </Button>
+      <Lyrics spNowPlaying={nowPlaying}/>
     </div>
   );
 };

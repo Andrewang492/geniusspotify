@@ -7,20 +7,18 @@ import Box from '@mui/material/Box';
 import { Outlet, Link as RLink } from "react-router-dom";
 import HomePage from "./components/pages/HomePage";
 // import { useNowPlaying } from "./components/contexts/NowPlayingProvider";
+import { AuthContext } from "./components/contexts/AuthContext";
+
 
 const baseurl = "http://127.0.0.1:5173";
 // const backendUrl = import.meta.env.REACT_APP_BASE_URL;
 
-const client_id = "5e6209bc2f3e4169811f798f5ffa2086";
-const client_secret = "fad48b45176541de944c8f47b8d3f624";
 var redirect_uri = `${baseurl}/redirect`;
 var scope = `
 user-read-playback-state 
 user-read-currently-playing
 `;
 let state = null;
-
-export const TokenContext = createContext(null);
 
 const getTokenFromUrl = () => {
   const tokens = window.location.hash
@@ -52,8 +50,7 @@ const getCookie = (name) => {
 };
 
 function App() {
-  const [spotifyToken, setSpotifyToken] = useState("");
-  const [spotifyRToken, setSpotifyRToken] = useState("");
+  const { setSpotifyToken, setSpotifyRToken } = useContext(AuthContext);
 
 
   useEffect(() => {
@@ -89,14 +86,12 @@ function App() {
 
 
   return (
-    <TokenContext.Provider value={{spotifyToken, spotifyRToken}}>
       <div id="main" style={{ display: "flex", flexDirection: "row" }}>
         <div id="left-main">
           <HomePage></HomePage>
           
         </div>
       </div>
-    </TokenContext.Provider>
   );
 }
 
