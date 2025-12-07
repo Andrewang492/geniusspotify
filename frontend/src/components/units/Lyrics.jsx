@@ -42,7 +42,9 @@ const Lyrics = ({ spNowPlaying }) => {
   useEffect(() => {
     if (spNowPlaying.item) {
       fetchLyrics(spNowPlaying.item.name, spotifyToken).then((data) => {
-        setLyrics(data.song.description.plain);
+        console.log("lyrics fetched:");
+        console.log(data);
+        setLyrics(String(data));
       });
     }
   }, [spNowPlaying]);

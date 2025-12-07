@@ -304,9 +304,9 @@ app.get("/genius/search", (req, res) => {
 
 // Using a song id, get referents.
 app.get("/genius/referents", (req, res) => {
-  const songId = req.query.songId;
+  const song_id = req.query.songId;
   fetch(
-    `https://api.genius.com/referents?` + querystring.stringify({ q: songId }),
+    `https://api.genius.com/referents?` + querystring.stringify({ song_id }),
     {
       headers: {
         Authorization: "Bearer " + g_client_accessToken,
