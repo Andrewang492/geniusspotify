@@ -7,6 +7,7 @@ import ErrorPage from "./error.jsx";
 import Redirect from "./routes/redirect.jsx";
 import User from "./routes/User.jsx";
 import NotFoundPage from "./routes/NotFoundPage.jsx";
+import { NowPlayingProvider } from "./components/contexts/NowPlayingProvider.jsx";
 
 const router = createBrowserRouter([
   {
@@ -33,6 +34,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <NowPlayingProvider>
+      <RouterProvider router={router} />
+    </NowPlayingProvider>
   </React.StrictMode>
 );

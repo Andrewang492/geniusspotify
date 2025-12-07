@@ -5,6 +5,7 @@ const {
   makeQuery,
   getArtistsNames,
   getGeniusAPIPath,
+  getGeniusBestMatchSongId,
 } = require("./scripts/geniusQuery");
 const querystring = require("node:querystring");
 require("dotenv").config();
@@ -136,7 +137,6 @@ app.get("/go", (req, res) => {
       if (body.context && body.item) {
         let { queryString, artistNames } = makeQuery(body);
         // Search genius
-        console.log("");
         return fetch(
           `https://api.genius.com/search?` +
             querystring.stringify({ q: queryString }),
@@ -155,7 +155,7 @@ app.get("/go", (req, res) => {
     .then((object) => {
       console.log(`Query string: ${queryString}`);
       console.log(queryString); // TODO seems like queryString is not defined here?
-      const apiPath = getGeniusAPIPath(object, queryString);
+      const apiPath = getGeniusBestMatchSongId(object, queryString);
 
       // Get actual lyrics response
       return fetch(`https://api.genius.com${apiPath}?text_format=plain`, {

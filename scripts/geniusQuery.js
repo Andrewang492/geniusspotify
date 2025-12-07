@@ -132,7 +132,32 @@ function getGeniusAPIPath(object, queryString, artistNames) {
   return apiPath;
 }
 
-module.exports = { makeQuery, getGeniusAPIPath };
+function getGeniusBestMatchSongId(object, queryString, artistNames) {
+  console.log(`got genius response`);
+  console.log(object);
+  console.log(queryString);
+
+  // only select if artist in the genius page looks right.
+  const results1 = object.response.hits.filter((e) => {
+    console.log(e.result.primary_artist?.name.toLowerCase());
+    return queryString.includes(e.result.primary_artist?.name.toLowerCase());
+  });
+  if (results1.length == 0 && object.response.hits.length == 0) {
+    throw new Error("No hits");
+  }
+  results1.forEach((element) => {
+    console.log(element.result.full_title);
+    console.log(element.result.primary_artist?.name);
+  });
+  // try select filtered by artist. Else use the unfiltered results' first result.
+  const apiPath = results1[0]
+    ? results1[0].result.id
+    : object.response.hits[0].result.id;
+  return apiPath;
+}
+
+
+module.exports = { makeQuery, getGeniusAPIPath, getGeniusBestMatchSongId };
 
 /**
  * @deprecated
