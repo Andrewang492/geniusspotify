@@ -168,7 +168,7 @@ app.get("/refresh_token", function (req, res) {
 });
 
 //------------------------------
-// Genius Authentication
+// Genius Authentication (UNUSED)
 //------------------------------
 const gStateKey = "genius_auth_state";
 app.get("/glogin", function (req, res) {
@@ -189,6 +189,33 @@ app.get("/glogin", function (req, res) {
   );
 });
 
+app.get("/glogin2", function (req, res) {
+  const authUrl = 'https://api.genius.com/oauth/token';
+  const authHeaders = {
+    'Content-Type': 'application/x-www-form-urlencoded',
+    Authorization: `Basic ${btoa(`${g_client_id}:${g_client_secret}`)}`,
+  };
+  const authData = {
+    grant_type: 'client_credentials',
+  };
+  fetch(authUrl, {
+    method: 'POST',
+    headers: authHeaders,
+    body: new URLSearchParams(authData),
+  }).then((response) => response.json()).then((data) => {
+    //  res.redirect(
+    //       `${frontendurl}/#` +
+    //         querystring.stringify({
+    //           g_access_token: data.access_token,
+    //         })
+    //     );
+    console.log(data)
+  }).catch((e) => {
+    console.error('failed glogin2')
+    console.error(e)
+  })
+});
+
 app.get("/gcallback", function (req, res) {
   // your application requests refresh and access tokens
   // after checking the state parameter
@@ -196,7 +223,6 @@ app.get("/gcallback", function (req, res) {
   var code = req.query.code || null;
   var state = req.query.state || null;
   var storedState = req.cookies ? req.cookies[gStateKey] : null;
-
   if (state === null || state !== storedState) {
     res.redirect(
       "/#" +
@@ -227,7 +253,6 @@ app.get("/gcallback", function (req, res) {
       if (!error && response.statusCode === 200) {
         var access_token = body.access_token,
           refresh_token = body.refresh_token;
-
         // we can also pass the token to the browser to make requests from there !!!!!!!!!!!
         res.redirect(
           `${frontendurl}/#` +
@@ -237,12 +262,14 @@ app.get("/gcallback", function (req, res) {
             })
         );
       } else {
-        res.redirect(
-          `${frontendurl}/#` +
-            querystring.stringify({
-              error: "invalid_token",
-            })
-        );
+        console.error(`auth error ${response.statusCode}: ${error}`);
+        console.error(error)
+        // res.redirect(
+        //   `${frontendurl}/#` +
+        //     querystring.stringify({
+        //       error,
+        //     })
+        // );
       }
     });
   }

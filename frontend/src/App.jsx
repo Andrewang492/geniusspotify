@@ -60,6 +60,9 @@ function App() {
     var _refresh_token = hash.refresh_token;
     console.log(`token from url: ${_token}`);
     console.log(`refresh token from url: ${_refresh_token}`);
+    if (hash.error) {
+      console.error(`error after login: ${hash.error}`)
+    }
 
     if (!_token) { // try get token from cookie
       _token = getCookie("spotify_token");
