@@ -347,5 +347,37 @@ app.get("/genius/referents", (req, res) => {
     .catch((e) => res.send(e.toString()));
 });
 
+// Using a song id, get genius-provided embedded page.
+app.get("/genius/embedded", (req, res) => {
+  const song_id = req.query.songId;
+  fetch(
+    `https://api.genius.com/songs?` + querystring.stringify({ song_id }),
+    {
+      headers: {
+        Authorization: "Bearer " + g_client_accessToken,
+      },
+    }
+  )
+    .then((geniusFetchRes) => geniusFetchRes.json())
+    .then((object) => {
+      res.send(object.response.embed_content);
+    })
+    .catch((e) => res.send(e.toString()));
+});
+
+
+app.get("/genius/sanity", (req, res) => {
+  res.send(
+    `<div id='rg_embed_link_4836122' class='rg_embed_link' data-song-id='4836122'>
+      Read 
+      <a href='https://genius.com/Deko-phantasy-star-online-lyrics'>“Phantasy Star Online” by Deko</a>
+      on Genius
+    </div> 
+    <script crossorigin src='//genius.com/songs/4836122/embed.js'></script>`
+  );
+
+});
+
+
 console.log(`Listening on ${baseurl}`);
 app.listen(process.env.PORT, `${process.env.HOST}`);
